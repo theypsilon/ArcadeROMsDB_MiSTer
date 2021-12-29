@@ -109,6 +109,10 @@ def process_with_downloads(source: str, interrupt_handler: InterruptHandler, db_
             if rom in files:
                 continue
 
+            if rom in skip_list:
+                print('Skipping %s' % rom)
+                continue
+
             rom_description = try_work_on_rom_a_few_times(rom, source, temp, roms[rom], interrupt_handler)
             save_progress(db_file, files, rom, rom_description)
 
