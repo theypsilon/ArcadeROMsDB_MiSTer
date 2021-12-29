@@ -7,7 +7,7 @@ import tempfile
 import re
 import os
 import hashlib
-from typing import Any, Dict, List
+from typing import Any, Dict, List, TypedDict, TypeAlias
 import zlib
 import signal
 import time
@@ -19,6 +19,10 @@ def print(text=""):
     sys.stdout.flush()
 
 skip_list = []
+
+class HashData(TypedDict):
+    md5: str
+    size: int
 
 class InterruptHandler:
     def __init__(self, timeout: int):
@@ -120,14 +124,14 @@ def process_with_downloads(source: str, interrupt_handler: InterruptHandler, db_
             if interrupt_handler.should_end():
                 return
 
-def save_progress(db_file: str, files: Dict[str, Dict[str, Any]], rom: str, rom_description: Dict[str, Any]) -> None:
+def save_progress(db_file: str, files: Dict[str, HashData], rom: str, rom_description: HashData) -> None:
     if rom_description is not None:
         files[rom] = rom_description
 
         with open(db_file, 'wt') as f:
             json.dump(files, f, indent=4, sort_keys=True)
 
-def try_work_on_rom_a_few_times(rom: str, source: str, temp: Any, expected_size: int, interrupt_handler: InterruptHandler, verbose: bool) -> Dict[str, Any]:
+def try_work_on_rom_a_few_times(rom: str, source: str, temp: Any, expected_size: int, interrupt_handler: InterruptHandler, verbose: bool) -> HashData:
     for try_index in range(3):
         rom_description = work_on_rom(rom, source, temp, expected_size, verbose)
         if rom_description is not None:
@@ -147,7 +151,7 @@ def try_work_on_rom_a_few_times(rom: str, source: str, temp: Any, expected_size:
     print('Aborting execution with errors.')
     exit(-1)
 
-def work_on_rom(rom: str, source: str, temp: Any, expected_size: int, verbose: bool) -> Dict[str, Any]:
+def work_on_rom(rom: str, source: str, temp: Any, expected_size: int, verbose: bool) -> HashData:
     print(rom)
     url = source + rom
 
@@ -205,7 +209,7 @@ def query_roms(source: str) -> Dict[str, int]:
 
     return roms
 
-def load_files(db_file: str) -> Dict[str, Dict[str, Any]]:
+def load_files(db_file: str) -> Dict[str, HashData]:
     files = {}
     if os.path.isfile(db_file):
         with open(db_file, 'r') as f:
