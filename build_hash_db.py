@@ -18,6 +18,8 @@ def print(text=""):
     _print(text, flush=True)
     sys.stdout.flush()
 
+skip_list = ['hapyfsh2.zip']
+
 class InterruptHandler:
     def __init__(self, timeout: int):
         self._timeout = timeout
@@ -83,6 +85,10 @@ def process_with_metadata_query(source: str, interrupt_handler: InterruptHandler
 
         rom = description["name"]
         if rom in files:
+            continue
+        
+        if rom in skip_list:
+            print('Skipping %s' % rom)
             continue
 
         print(rom)
