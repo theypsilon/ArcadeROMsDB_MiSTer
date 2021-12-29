@@ -18,7 +18,7 @@ def print(text=""):
     _print(text, flush=True)
     sys.stdout.flush()
 
-skip_list = ['hapyfsh2.zip']
+skip_list = []
 
 class InterruptHandler:
     def __init__(self, timeout: int):
@@ -103,6 +103,7 @@ def process_with_metadata_query(source: str, interrupt_handler: InterruptHandler
 def process_with_downloads(source: str, interrupt_handler: InterruptHandler, db_file: str) -> None:
     roms = query_roms(source)
     files = load_files(db_file)
+    verbose = os.environ.get('VERBOSE', 'false') == 'true'
 
     with tempfile.NamedTemporaryFile() as temp:
         for rom in roms:
@@ -113,7 +114,7 @@ def process_with_downloads(source: str, interrupt_handler: InterruptHandler, db_
                 print('Skipping %s' % rom)
                 continue
 
-            rom_description = try_work_on_rom_a_few_times(rom, source, temp, roms[rom], interrupt_handler)
+            rom_description = try_work_on_rom_a_few_times(rom, source, temp, roms[rom], interrupt_handler, verbose)
             save_progress(db_file, files, rom, rom_description)
 
             if interrupt_handler.should_end():
@@ -126,9 +127,9 @@ def save_progress(db_file: str, files: Dict[str, Dict[str, Any]], rom: str, rom_
         with open(db_file, 'wt') as f:
             json.dump(files, f, indent=4, sort_keys=True)
 
-def try_work_on_rom_a_few_times(rom: str, source: str, temp: Any, expected_size: int, interrupt_handler: InterruptHandler) -> Dict[str, Any]:
+def try_work_on_rom_a_few_times(rom: str, source: str, temp: Any, expected_size: int, interrupt_handler: InterruptHandler, verbose: bool) -> Dict[str, Any]:
     for try_index in range(3):
-        rom_description = work_on_rom(rom, source, temp, expected_size)
+        rom_description = work_on_rom(rom, source, temp, expected_size, verbose)
         if rom_description is not None:
             return rom_description
 
@@ -146,10 +147,11 @@ def try_work_on_rom_a_few_times(rom: str, source: str, temp: Any, expected_size:
     print('Aborting execution with errors.')
     exit(-1)
 
-def work_on_rom(rom: str, source: str, temp: Any, expected_size: int) -> Dict[str, Any]:
+def work_on_rom(rom: str, source: str, temp: Any, expected_size: int, verbose: bool) -> Dict[str, Any]:
     print(rom)
     url = source + rom
-    proc = subprocess.run(curl(['-o', temp.name, url]), stderr=subprocess.STDOUT)
+
+    proc = subprocess.run(curl(['-o', temp.name, url], size=expected_size, verbose=verbose), stderr=subprocess.STDOUT)
     if proc.returncode != 0:
         print('Failed! %d' % proc.returncode)
         return None
@@ -211,16 +213,12 @@ def load_files(db_file: str) -> Dict[str, Dict[str, Any]]:
 
     return files
 
-def curl(params: List[str]) -> List[str]:
-    curl_parameters = ['curl']
-    if os.environ.get('VERBOSE', 'false') == 'true':
-        curl_parameters.append('-L')
-    else:
-        curl_parameters.append('-sL')
-    for s in os.environ.get('CURL_SECURE', '').split():
-        curl_parameters.append(s)
-    for p in params:
-        curl_parameters.append(p)
+def curl(params: List[str], size=0, verbose=False) -> List[str]:
+    curl_parameters = ['curl', '-L' if verbose else '-sL']
+    curl_parameters.extend(os.environ.get('CURL_SECURE', '').split())
+    if size > 1_000_000_000:
+        curl_parameters.extend(['--header', 'X-Accel-Buffering: no'])
+    curl_parameters.extend(params)
     return curl_parameters
 
 def md5_calc(file: str) -> str:
