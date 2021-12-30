@@ -1,0 +1,20 @@
+name: Build Arcade Roms DB
+
+on:
+  schedule:
+  - cron:  "*/20 * * * *"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build
+      run: |
+        set -euo pipefail
+        git config --global user.email "theypsilon@gmail.com"
+        git config --global user.name "The CI/CD Bot"
+        python3 .github/build_arcade_roms_db.py
