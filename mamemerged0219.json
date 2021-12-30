@@ -1,4 +1,9 @@
 {
+    "0000_skip_list": [
+        "hapyfsh2.zip",
+        "kof2002um.zip",
+        "tvcapcom.zip"
+    ],
     "005.zip": {
         "md5": "64ba2c1869a491bdae1384d3a95c2027",
         "size": 29769
