@@ -91,14 +91,16 @@ def process_with_metadata_query(source: str, interrupt_handler: InterruptHandler
         if rom in files:
             continue
         
-        if rom in skip_list:
+        rom_size = int(description["size"].strip())
+        
+        if rom in skip_list or rom_size > 1_000_000_000:
             print('Skipping %s' % rom)
             continue
 
         print(rom)
         save_progress(db_file, files, rom, {
             "md5": description["md5"].strip(),
-            "size": int(description["size"].strip())
+            "size": rom_size
         })
 
         if interrupt_handler.should_end():
@@ -113,12 +115,14 @@ def process_with_downloads(source: str, interrupt_handler: InterruptHandler, db_
         for rom in roms:
             if rom in files:
                 continue
+                
+            rom_size = roms[rom]
 
-            if rom in skip_list:
+            if rom in skip_list or rom_size > 1_000_000_000:
                 print('Skipping %s' % rom)
                 continue
 
-            rom_description = try_work_on_rom_a_few_times(rom, source, temp, roms[rom], interrupt_handler, verbose)
+            rom_description = try_work_on_rom_a_few_times(rom, source, temp, rom_size, interrupt_handler, verbose)
             save_progress(db_file, files, rom, rom_description)
 
             if interrupt_handler.should_end():
