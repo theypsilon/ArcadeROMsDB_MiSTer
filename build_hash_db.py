@@ -88,13 +88,13 @@ def process_with_metadata_query(source: str, interrupt_handler: InterruptHandler
             continue
 
         rom = description["name"]
-        if rom in files:
+        if rom in files or in_skip_list(files, rom):
             continue
         
         rom_size = int(description["size"].strip())
         
-        if rom in skip_list or rom_size > 1_000_000_000:
-            print('Skipping %s' % rom)
+        if rom_size > 1_000_000_000:
+            add_rom_to_skip_list(files, rom)
             continue
 
         print(rom)
@@ -113,13 +113,13 @@ def process_with_downloads(source: str, interrupt_handler: InterruptHandler, db_
 
     with tempfile.NamedTemporaryFile() as temp:
         for rom in roms:
-            if rom in files:
+            if rom in files or in_skip_list(files, rom):
                 continue
                 
             rom_size = roms[rom]
 
-            if rom in skip_list or rom_size > 1_000_000_000:
-                print('Skipping %s' % rom)
+            if rom_size > 1_000_000_000:
+                add_rom_to_skip_list(files, rom)
                 continue
 
             rom_description = try_work_on_rom_a_few_times(rom, source, temp, rom_size, interrupt_handler, verbose)
@@ -127,6 +127,15 @@ def process_with_downloads(source: str, interrupt_handler: InterruptHandler, db_
 
             if interrupt_handler.should_end():
                 return
+
+def in_skip_list(files, rom):
+    return '0000_skip_list' in files and rom in files['0000_skip_list']
+
+def add_rom_to_skip_list(files, rom):
+    print('Skipping %s' % rom)
+    if '0000_skip_list' not in files:
+        files['0000_skip_list'] = []
+    files['0000_skip_list'].append(rom)
 
 def save_progress(db_file: str, files: Dict[str, HashData], rom: str, rom_description: HashData) -> None:
     if rom_description is not None:
