@@ -144,7 +144,7 @@ def save_rom_in_files(db_file: str, files: Dict[str, HashData], rom: str, rom_de
         files[rom] = rom_description
         save_db_file(db_file, files)
 
-def save_db_file(db_files, files):
+def save_db_file(db_file, files):
     with open(db_file, 'wt') as f:
         json.dump(files, f, indent=4, sort_keys=True)
 
