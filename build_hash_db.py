@@ -7,7 +7,7 @@ import tempfile
 import re
 import os
 import hashlib
-from typing import Any, Dict, List, TypedDict, TypeAlias
+from typing import Any, Dict, List, TypedDict
 import zlib
 import signal
 import time
