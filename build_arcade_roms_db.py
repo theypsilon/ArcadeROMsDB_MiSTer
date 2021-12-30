@@ -18,7 +18,6 @@ def main():
 
     with open('arcade_mra_sources.json', 'r') as f:
         sources = json.load(f)
-        print(sources)
 
     mra_dirs = 'delme/'
 
@@ -30,14 +29,16 @@ def main():
                 print('Ok')
             else:
                 print("FAILED!")
+                exit(-1)
 
             result = subprocess.run(['unzip', temp.name, sources[mra_url], '-d', mra_dirs], stderr=subprocess.STDOUT)
             if result.returncode == 0:
                 print('Ok')
             else:
                 print("FAILED!")
-            
-        print(mra_url)
+                exit(-1)
+        
+        print()
 
     for mra in find_all_mras(mra_dirs):
         mameversion, zips = read_mra_fields(mra)
