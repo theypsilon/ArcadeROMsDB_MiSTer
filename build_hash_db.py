@@ -95,10 +95,11 @@ def process_with_metadata_query(source: str, interrupt_handler: InterruptHandler
         
         if rom_size > 1_000_000_000:
             add_rom_to_skip_list(files, rom)
+            save_db_file(db_file, files)
             continue
 
         print(rom)
-        save_progress(db_file, files, rom, {
+        save_rom_in_files(db_file, files, rom, {
             "md5": description["md5"].strip(),
             "size": rom_size
         })
@@ -120,10 +121,11 @@ def process_with_downloads(source: str, interrupt_handler: InterruptHandler, db_
 
             if rom_size > 1_000_000_000:
                 add_rom_to_skip_list(files, rom)
+                save_db_file(db_file, files)
                 continue
 
             rom_description = try_work_on_rom_a_few_times(rom, source, temp, rom_size, interrupt_handler, verbose)
-            save_progress(db_file, files, rom, rom_description)
+            save_rom_in_files(db_file, files, rom, rom_description)
 
             if interrupt_handler.should_end():
                 return
@@ -137,12 +139,14 @@ def add_rom_to_skip_list(files, rom):
         files['0000_skip_list'] = []
     files['0000_skip_list'].append(rom)
 
-def save_progress(db_file: str, files: Dict[str, HashData], rom: str, rom_description: HashData) -> None:
+def save_rom_in_files(db_file: str, files: Dict[str, HashData], rom: str, rom_description: HashData) -> None:
     if rom_description is not None:
         files[rom] = rom_description
+        save_db_file(db_file, files)
 
-        with open(db_file, 'wt') as f:
-            json.dump(files, f, indent=4, sort_keys=True)
+def save_db_file(db_files, files):
+    with open(db_file, 'wt') as f:
+        json.dump(files, f, indent=4, sort_keys=True)
 
 def try_work_on_rom_a_few_times(rom: str, source: str, temp: Any, expected_size: int, interrupt_handler: InterruptHandler, verbose: bool) -> HashData:
     for try_index in range(3):
