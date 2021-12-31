@@ -52,12 +52,18 @@ def main():
             mameversion = '0217'
             hash_db = load_hash_db(mameversion, hash_dbs_storage)
         for z in zips:
+            if z is 'jtbeta.zip':
+                continue
+
             is_hbmame = 'hbmame/' in z
             zip_name = Path(z).name
             games_path = ('games/hbmame/%s' % zip_name) if is_hbmame else ('games/mame/%s' % zip_name)
             if games_path in files:
                 print('WARNING! File %s tried to be redefined during mra %s' % (games_path, str(mra)))
                 continue
+            
+            if zip_name in hash_db:
+                raise Exception('zip_name %s not in hash_db for mra %s' % (zip_name, str(mra)))
 
             hash_description = hash_db[zip_name]
             files[games_path] = {
