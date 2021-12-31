@@ -17,7 +17,7 @@ def print(text=""):
 def main():
     print('START!')
 
-    with open('arcade_mra_sources.json', 'r') as f:
+    with open('arcade_sources.json', 'r') as f:
         sources = json.load(f)
 
     mra_dirs = 'delme/'
