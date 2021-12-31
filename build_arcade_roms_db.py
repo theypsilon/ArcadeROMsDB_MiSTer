@@ -185,7 +185,7 @@ def save_json(db, json_name):
     zip_name = json_name + '.zip'
     with ZipFile(zip_name, 'w') as zipf:
         with zipf.open(json_name, "w") as jsonf:
-            jsonf.write(json.dumps(db).encode("utf-8"))
+            jsonf.write(json.dumps(db, sort_keys=True).encode("utf-8"))
     with open(json_name, 'w') as f:
         json.dump(db, f, sort_keys=True, indent=4)
     
