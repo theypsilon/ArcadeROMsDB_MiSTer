@@ -20,6 +20,8 @@ jobs:
         python3 build_arcade_roms_db.py
         git checkout --orphan db
         git reset
+        ls -ltrca
+        git status -s
         git add arcade_roms_db.json.zip
         git commit -m "-"
         git push --force origin db
