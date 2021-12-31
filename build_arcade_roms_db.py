@@ -66,12 +66,16 @@ def read_mra_fields(mra_path):
         elem_tag = elem.tag.lower()
         if elem_tag == 'mameversion':
             if mameversion is not None:
-                raise Exception('Duplicated mameversion tag on file %s, first value %s, second value %s' % (str(mra_path),mameversion,elem.text))
+                print('WARNING! Duplicated mameversion tag on file %s, first value %s, later value %s' % (str(mra_path),mameversion,elem.text))
+                continue
             mameversion = elem.text.strip().lower()
         elif elem_tag == 'rom':
             attributes = {k.strip().lower(): v for k, v in elem.attrib.items()}
             if 'zip' in attributes:
-                zips.extend([z.strip().lower() for z in attributes['zip'].strip().lower().split('|')])
+                latest_zips = attributes['zip'].strip().lower().split('|')
+                if len(zips) != 0:
+                    raise Exception('WARNING! Duplicated rom zips attributes on file %s, first value %s, later value %s' % (str(mra_path),str(zips),str(latest_zips)))
+                zips.extend([z.strip().lower() for z in latest_zips])
 
     return mameversion, zips
 
