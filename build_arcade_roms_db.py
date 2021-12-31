@@ -66,7 +66,7 @@ def read_mra_fields(mra_path):
         elem_tag = elem.tag.lower()
         if elem_tag == 'mameversion':
             if mameversion is not None:
-                raise Exception('Duplicated mameversion tag on file %s, first value %d, second value %d' % (str(mra_path),mameversion,elem.text))
+                raise Exception('Duplicated mameversion tag on file %s, first value %s, second value %s' % (str(mra_path),mameversion,elem.text))
             mameversion = elem.text.strip().lower()
         elif elem_tag == 'rom':
             attributes = {k.strip().lower(): v for k, v in elem.attrib.items()}
@@ -76,4 +76,8 @@ def read_mra_fields(mra_path):
     return mameversion, zips
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(e)
+        exit(-1)
