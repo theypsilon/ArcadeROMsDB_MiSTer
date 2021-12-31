@@ -73,7 +73,8 @@ def main():
                 "url": sources['ao'][mameversion] + zip_name
             }
 
-    print(files)
+    with open('result.json', 'w') as f:
+        json.dump(files, f, indent=4, sort_keys=True)
 
     print('Done.')
 

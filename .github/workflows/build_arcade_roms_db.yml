@@ -18,3 +18,4 @@ jobs:
         git config --global user.email "theypsilon@gmail.com"
         git config --global user.name "The CI/CD Bot"
         python3 build_arcade_roms_db.py
+        cat result.json
