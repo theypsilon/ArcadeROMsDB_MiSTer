@@ -76,17 +76,21 @@ def main():
             }
 
     db = {
-        "db_id": 'bad_apple_db',
+        "db_id": 'arcade_roms_db',
         "db_files": [],
-        "files": {},
-        "folders": {},
+        "files": files,
+        "folders": {
+            "games": {},
+            "games/mame": {},
+            "games/hbmame": {},
+        },
         "zips": {},
         "base_files_url": "",
         "default_options": {},
         "timestamp":  int(time.time())
     }
 
-    save_json(files, 'arcaderomsdb.json')
+    save_json(db, 'arcade_roms_db.json')
     print('Done.')
 
 def load_hash_db(mameversion, hash_dbs_storage):
