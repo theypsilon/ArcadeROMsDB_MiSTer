@@ -52,7 +52,7 @@ def main():
             mameversion = '0217'
             hash_db = load_hash_db(mameversion, hash_dbs_storage)
         for z in zips:
-            if z is 'jtbeta.zip':
+            if z == 'jtbeta.zip':
                 continue
 
             is_hbmame = 'hbmame/' in z
