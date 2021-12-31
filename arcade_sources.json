@@ -1,5 +1,5 @@
 {
-	"ao": {
+	"mame": {
 		"0209": "https://archive.org/download/MAME209RomsOnlyMerged/",
 		"0216": "https://archive.org/download/MAME216RomsOnlyMerged/",
 		"0217": "https://archive.org/download/MAME217RomsOnlyMerged/MAME%200.217%20ROMs%20%28merged%29.zip/",
@@ -12,6 +12,13 @@
 		"0224": "https://archive.org/download/MAME224RomsOnlyMerged/",
 		"0228": "https://archive.org/download/MAME_0.228_ROMs_merged/MAME_0.228_ROMs_merged.zip/",
 		"0229": "https://archive.org/download/mame.0229/"
+	},
+	"hbmame": {
+		"0217": "https://archive.org/download/hbmame0217/",
+		"0220": "https://archive.org/download/hbmame0220/",
+		"0224": "https://archive.org/download/hbmame0224roms/",
+		"0226": "https://archive.org/download/HBmame0.226-romsmerged/",
+		"0227": "https://archive.org/download/HBmame0.227-romsmerged/"
 	},
 	"mra": {
 		"https://github.com/MiSTer-devel/Distribution_MiSTer/archive/refs/heads/main.zip": "Distribution_MiSTer-main/_Arcade/*",
