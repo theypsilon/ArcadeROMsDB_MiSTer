@@ -101,6 +101,7 @@ def main():
     print('Done.')
 
 def tag_by_rbf(tag_dictionary, rbf):
+    rbf = rbf if rbf.startswith('jt') else ('arcade%s' % rbf)
     if rbf not in tag_dictionary:
         tag_dictionary[rbf] = len(tag_dictionary)
     return tag_dictionary[rbf]
