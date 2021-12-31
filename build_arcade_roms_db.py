@@ -48,11 +48,7 @@ def main():
 
     for mra in find_all_mras(mra_dirs):
         mameversion, zips = read_mra_fields(mra)
-        hash_db = load_hash_db(mameversion, hash_dbs_storage)
-        if hash_db is None:
-            print('WARNING! mameversion "%s" missing for mra %s, falling back to 0217.' % (str(mameversion), str(mra)))
-            mameversion = '0217'
-            hash_db = load_hash_db(mameversion, hash_dbs_storage)
+        
         for z in zips:
             if z == 'jtbeta.zip':
                 continue
@@ -64,6 +60,7 @@ def main():
                 print('WARNING! File %s tried to be redefined during mra %s' % (games_path, str(mra)))
                 continue
             
+            hash_db = load_hash_db(mameversion, hash_dbs_storage, is_hbmame, mra)
             if zip_name not in hash_db:
                 print('INFO: zip_name %s not in hash_db %s for mra %s' % (zip_name, mameversion, str(mra)))
                 continue
@@ -93,17 +90,29 @@ def main():
     save_json(db, 'arcade_roms_db.json')
     print('Done.')
 
-def load_hash_db(mameversion, hash_dbs_storage):
-    if mameversion not in hash_dbs_storage:
-        hash_dbs_storage[mameversion] = hash_db_from_mameversion(mameversion)
+def load_hash_db(mameversion, hash_dbs_storage, is_hbmame, mra):
+    hash_db = load_hash_db2(mameversion, hash_dbs_storage, is_hbmame)
+    if hash_db is None:
+        if is_hbmame:
+            print('WARNING! mameversion "%s" missing for mra %s, falling back to 0220.' % (str(mameversion), str(mra)))
+            mameversion = '0220'
+        else:
+            print('WARNING! mameversion "%s" missing for mra %s, falling back to 0217.' % (str(mameversion), str(mra)))
+            mameversion = '0217'
+        hash_db = load_hash_db2(mameversion, hash_dbs_storage, is_hbmame)
+    return hash_db
 
-    return hash_dbs_storage[mameversion]
-
-def hash_db_from_mameversion(mameversion):
+def load_hash_db2(mameversion, hash_dbs_storage, is_hbmame):
     if mameversion is None:
         return None
 
-    db_path = 'mamemerged%s.json' % mameversion
+    db_path = ('hbmamemerged%s.json' % mameversion) if is_hbmame else ('mamemerged%s.json' % mameversion)
+    if db_path not in hash_dbs_storage:
+        hash_dbs_storage[db_path] = hash_db_from_mameversion(db_path)
+
+    return hash_dbs_storage[db_path]
+
+def hash_db_from_mameversion(db_path):
     if not Path(db_path).is_file():
         return None
 
