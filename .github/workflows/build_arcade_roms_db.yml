@@ -18,4 +18,8 @@ jobs:
         git config --global user.email "theypsilon@gmail.com"
         git config --global user.name "The CI/CD Bot"
         python3 build_arcade_roms_db.py
-        cat result.json
+        git checkout --orphan db
+        git reset
+        git add arcade_roms_db.json.zip
+        git commit -m "-"
+        git push --force origin db

@@ -8,6 +8,8 @@ from pathlib import Path
 from xml.etree.ElementTree import ParseError
 import xml.etree.cElementTree as ET
 import sys
+from zipfile import ZipFile
+import time
 
 _print = print
 def print(text=""):
@@ -73,9 +75,18 @@ def main():
                 "url": sources['ao'][mameversion] + zip_name
             }
 
-    with open('result.json', 'w') as f:
-        json.dump(files, f, indent=4, sort_keys=True)
+    db = {
+        "db_id": 'bad_apple_db',
+        "db_files": [],
+        "files": {},
+        "folders": {},
+        "zips": {},
+        "base_files_url": "",
+        "default_options": {},
+        "timestamp":  int(time.time())
+    }
 
+    save_json(files, 'arcaderomsdb.json')
     print('Done.')
 
 def load_hash_db(mameversion, hash_dbs_storage):
@@ -136,6 +147,14 @@ def read_mra_fields(mra_path):
 
     return mameversion, list(zips)
 
+def save_json(db, json_name):
+    zip_name = json_name + '.zip'
+    with ZipFile(zip_name, 'w') as zipf:
+        with zipf.open(json_name, "w") as jsonf:
+            jsonf.write(json.dumps(db).encode("utf-8"))
+    with open(json_name, 'w') as f:
+        json.dump(db, f, sort_keys=True, indent=4)
+    
 if __name__ == "__main__":
     try:
         main()
