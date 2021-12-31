@@ -62,7 +62,7 @@ def main():
                 print('WARNING! File %s tried to be redefined during mra %s' % (games_path, str(mra)))
                 continue
             
-            if zip_name in hash_db:
+            if zip_name not in hash_db:
                 raise Exception('zip_name %s not in hash_db %s for mra %s' % (zip_name, mameversion, str(mra)))
 
             hash_description = hash_db[zip_name]
