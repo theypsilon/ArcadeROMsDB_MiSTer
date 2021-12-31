@@ -1,0 +1,20 @@
+{
+	"ao": {
+		"0209": "MAME209RomsOnlyMerged",
+		"0216": "MAME216RomsOnlyMerged",
+		"0217": "https://archive.org/download/MAME217RomsOnlyMerged/MAME%200.217%20ROMs%20%28merged%29.zip/",
+		"0218": "https://archive.org/download/MAME218RomsOnlyMerged/MAME%200.218%20ROMs%20%28merged%29.zip/",
+		"0219": "https://archive.org/download/MAME219RomsOnlyMerged/MAME%200.219%20ROMs%20%28merged%29.zip/",
+		"0220": "MAME220RomsOnlyMerged",
+		"0221": "MAME221RomsOnlyMerged",
+		"0222": "MAME222RomsOnlyMerged",
+		"0223": "MAME223RomsOnlyMerged",
+		"0224": "MAME224RomsOnlyMerged",
+		"0228": "https://archive.org/download/MAME_0.228_ROMs_merged/MAME_0.228_ROMs_merged.zip/",
+		"0229": "mame.0229"
+	},
+	"mra": {
+		"https://github.com/MiSTer-devel/Distribution_MiSTer/archive/refs/heads/main.zip": "Distribution_MiSTer-main/_Arcade/*",
+		"https://github.com/jotego/jtbin/archive/refs/heads/master.zip": "jtbin-master/mra/*"
+	}
+}
