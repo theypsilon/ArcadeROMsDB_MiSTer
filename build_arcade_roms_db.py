@@ -60,7 +60,7 @@ def main():
                 print('WARNING! File %s tried to be redefined during mra %s' % (games_path, str(mra)))
                 continue
             
-            hash_db = load_hash_db(mameversion, hash_dbs_storage, is_hbmame, mra)
+            hash_db, mameversion = load_hash_db(mameversion, hash_dbs_storage, is_hbmame, mra)
             if zip_name not in hash_db:
                 print('INFO: zip_name %s not in hash_db %s for mra %s' % (zip_name, mameversion, str(mra)))
                 continue
@@ -100,7 +100,7 @@ def load_hash_db(mameversion, hash_dbs_storage, is_hbmame, mra):
             print('WARNING! mameversion "%s" missing for mra %s, falling back to 0217.' % (str(mameversion), str(mra)))
             mameversion = '0217'
         hash_db = load_hash_db2(mameversion, hash_dbs_storage, is_hbmame)
-    return hash_db
+    return hash_db, mameversion
 
 def load_hash_db2(mameversion, hash_dbs_storage, is_hbmame):
     if mameversion is None:
