@@ -88,20 +88,10 @@ def process_with_metadata_query(source: str, interrupt_handler: InterruptHandler
             continue
 
         rom = description["name"]
-        if rom in files or in_skip_list(files, rom):
-            continue
-        
-        rom_size = int(description["size"].strip())
-        
-        if rom_size > 1_000_000_000:
-            add_rom_to_skip_list(files, rom)
-            save_db_file(db_file, files)
-            continue
-
         print(rom)
         save_rom_in_files(db_file, files, rom, {
             "md5": description["md5"].strip(),
-            "size": rom_size
+            "size": int(description["size"].strip())
         })
 
         if interrupt_handler.should_end():
