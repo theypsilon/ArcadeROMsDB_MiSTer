@@ -48,7 +48,7 @@ def main():
         mameversion, zips = read_mra_fields(mra)
         hash_db = load_hash_db(mameversion, hash_dbs_storage)
         if hash_db is None:
-            print('WARNING! mameversion "%d" missing for mra %d, falling back to 0217.' % (str(mameversion), str(mra)))
+            print('WARNING! mameversion "%s" missing for mra %s, falling back to 0217.' % (str(mameversion), str(mra)))
             mameversion = '0217'
             hash_db = load_hash_db(mameversion, hash_dbs_storage)
         for z in zips:
