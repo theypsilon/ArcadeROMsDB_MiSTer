@@ -5,6 +5,7 @@ import subprocess
 import tempfile
 import os
 from pathlib import Path
+from xml.etree.ElementTree import ParseError
 import xml.etree.cElementTree as ET
 import sys
 
@@ -57,24 +58,38 @@ def _find_all_mras_scan(directory):
         elif entry.name.lower().endswith(".mra"):
             yield Path(entry.path)
 
+def et_iterparse(mra_file, events):
+    with open(mra_file, 'r') as f:
+        text = f.read()
+
+    with tempfile.NamedTemporaryFile() as temp:
+        with open(temp.name, 'w') as f:
+            f.write(text.lower())
+
+        return ET.iterparse(temp.name, events=events)
+
 def read_mra_fields(mra_path):
     mameversion = None
     zips = set()
 
-    context = ET.iterparse(str(mra_path), events=("start",))
-    for _, elem in context:
-        elem_tag = elem.tag.lower()
-        if elem_tag == 'mameversion':
-            if mameversion is not None:
-                print('WARNING! Duplicated mameversion tag on file %s, first value %s, later value %s' % (str(mra_path),mameversion,elem.text))
-                continue
-            if elem.text is None:
-                continue
-            mameversion = elem.text.strip().lower()
-        elif elem_tag == 'rom':
-            attributes = {k.strip().lower(): v for k, v in elem.attrib.items()}
-            if 'zip' in attributes and attributes['zip'] is not None:
-                zips |= {z.strip().lower() for z in attributes['zip'].strip().lower().split('|')}
+    try:
+        context = et_iterparse(str(mra_path), events=("start",))
+        for _, elem in context:
+            elem_tag = elem.tag.lower()
+            if elem_tag == 'mameversion':
+                if mameversion is not None:
+                    print('WARNING! Duplicated mameversion tag on file %s, first value %s, later value %s' % (str(mra_path),mameversion,elem.text))
+                    continue
+                if elem.text is None:
+                    continue
+                mameversion = elem.text.strip().lower()
+            elif elem_tag == 'rom':
+                attributes = {k.strip().lower(): v for k, v in elem.attrib.items()}
+                if 'zip' in attributes and attributes['zip'] is not None:
+                    zips |= {z.strip().lower() for z in attributes['zip'].strip().lower().split('|')}
+    except ParseError as e:
+        print('WARNING! Parser error!')
+        print(e)
 
     return mameversion, list(zips)
 
