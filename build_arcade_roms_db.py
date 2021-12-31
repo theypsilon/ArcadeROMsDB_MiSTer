@@ -45,9 +45,13 @@ def main():
 
     hash_dbs_storage = {}
     files = {}
+    tag_dictionary = {
+        "mame": 0,
+        "hbmame": 1
+    }
 
     for mra in find_all_mras(mra_dirs):
-        mameversion, zips = read_mra_fields(mra)
+        mameversion, zips, rbf = read_mra_fields(mra)
         
         for z in zips:
             if z == 'jtbeta.zip':
@@ -65,11 +69,16 @@ def main():
                 print('INFO: zip_name %s not in hash_db %s for mra %s' % (zip_name, mameversion, str(mra)))
                 continue
 
+            tags = [1 if is_hbmame else 0]
+            if rbf is not None:
+                tags.append(tag_by_rbf(tag_dictionary, rbf))
+
             hash_description = hash_db[zip_name]
             files[games_path] = {
                 "hash": hash_description['md5'],
                 "size": hash_description['size'],
-                "url": sources['hbmame' if is_hbmame else 'mame'][mameversion] + zip_name
+                "url": sources['hbmame' if is_hbmame else 'mame'][mameversion] + zip_name,
+                "tags": tags
             }
 
     db = {
@@ -84,11 +93,17 @@ def main():
         "zips": {},
         "base_files_url": "",
         "default_options": {},
+        "tag_dictionary": tag_dictionary,
         "timestamp":  int(time.time())
     }
 
     save_json(db, 'arcade_roms_db.json')
     print('Done.')
+
+def tag_by_rbf(tag_dictionary, rbf):
+    if rbf not in tag_dictionary:
+        tag_dictionary[rbf] = len(tag_dictionary)
+    return tag_dictionary[rbf]
 
 def load_hash_db_with_fallback(old_mameversion, hash_dbs_storage, is_hbmame, mra):
     new_mameversion = old_mameversion
@@ -138,6 +153,7 @@ def et_iterparse(mra_file, events):
 
 def read_mra_fields(mra_path):
     mameversion = None
+    rbf = None
     zips = set()
 
     context = et_iterparse(str(mra_path), events=("start",))
@@ -154,8 +170,15 @@ def read_mra_fields(mra_path):
             attributes = {k.strip().lower(): v for k, v in elem.attrib.items()}
             if 'zip' in attributes and attributes['zip'] is not None:
                 zips |= {z.strip().lower() for z in attributes['zip'].strip().lower().split('|')}
+        elif elem_tag == 'rbf':
+            if rbf is not None:
+                print('WARNING! Duplicated rbf tag on file %s, first value %s, later value %s' % (str(mra_path),rbf,elem.text))
+                continue
+            if elem.text is None:
+                continue
+            rbf = elem.text.strip().lower()
 
-    return mameversion, list(zips)
+    return mameversion, list(zips), rbf
 
 def save_json(db, json_name):
     zip_name = json_name + '.zip'
