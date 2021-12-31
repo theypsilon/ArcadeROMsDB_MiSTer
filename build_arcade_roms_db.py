@@ -59,7 +59,7 @@ def _find_all_mras_scan(directory):
 
 def read_mra_fields(mra_path):
     mameversion = None
-    zips = []
+    zips = set()
 
     context = ET.iterparse(str(mra_path), events=("start",))
     for _, elem in context:
@@ -72,12 +72,9 @@ def read_mra_fields(mra_path):
         elif elem_tag == 'rom':
             attributes = {k.strip().lower(): v for k, v in elem.attrib.items()}
             if 'zip' in attributes:
-                latest_zips = attributes['zip'].strip().lower().split('|')
-                if len(zips) != 0:
-                    raise Exception('WARNING! Duplicated rom zips attributes on file %s, first value %s, later value %s' % (str(mra_path),str(zips),str(latest_zips)))
-                zips.extend([z.strip().lower() for z in latest_zips])
+                zips |= [z.strip().lower() for z in attributes['zip'].strip().lower().split('|')]
 
-    return mameversion, zips
+    return mameversion, list(zips)
 
 if __name__ == "__main__":
     try:
