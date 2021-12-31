@@ -69,7 +69,7 @@ def main():
             files[games_path] = {
                 "hash": hash_description['md5'],
                 "size": hash_description['size'],
-                "url": sources['ao'][mameversion] + zip_name
+                "url": sources['hbmame' if is_hbmame else 'mame'][mameversion] + zip_name
             }
 
     db = {
