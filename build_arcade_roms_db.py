@@ -72,7 +72,7 @@ def read_mra_fields(mra_path):
         elif elem_tag == 'rom':
             attributes = {k.strip().lower(): v for k, v in elem.attrib.items()}
             if 'zip' in attributes:
-                zips |= [z.strip().lower() for z in attributes['zip'].strip().lower().split('|')]
+                zips |= {z.strip().lower() for z in attributes['zip'].strip().lower().split('|')}
 
     return mameversion, list(zips)
 
