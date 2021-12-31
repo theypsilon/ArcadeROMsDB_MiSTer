@@ -63,7 +63,7 @@ def main():
                 continue
             
             if zip_name in hash_db:
-                raise Exception('zip_name %s not in hash_db for mra %s' % (zip_name, str(mra)))
+                raise Exception('zip_name %s not in hash_db %s for mra %s' % (zip_name, mameversion, str(mra)))
 
             hash_description = hash_db[zip_name]
             files[games_path] = {
