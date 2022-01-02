@@ -116,35 +116,6 @@ def main():
         try_git_push(db, 'arcade_roms_db.json.zip', git_push_branch)
     print('Done.')
 
-def try_git_push(db, file, branch):
-    expect_ok(subprocess.run(['git', 'fetch', 'origin'], stderr=subprocess.STDOUT), 'git fetch origin')
-    proc = subprocess.run(['git', 'show', 'origin/%s:%s' % (branch, file), '>', 'other.json.zip'], shell=True, stderr=subprocess.STDOUT)
-    other_db = load_zipped_json('other.json') if proc.returncode == 0 else {}
-
-    if json.dumps(clean_db(db), sort_keys=True) == json.dumps(clean_db(other_db), sort_keys=True):
-        print('No changes deteted.')
-        return
-    
-    expect_ok(subprocess.run(['git', 'checkout', '--orphan', branch], stderr=subprocess.STDOUT), 'git checkout orphan')
-    expect_ok(subprocess.run(['git', 'reset'], stderr=subprocess.STDOUT), 'git reset')
-    expect_ok(subprocess.run(['git', 'add', file], stderr=subprocess.STDOUT), 'git add file')
-    expect_ok(subprocess.run(['git', 'commit', '-m', '-'], stderr=subprocess.STDOUT), 'git commit')
-    expect_ok(subprocess.run(['git', 'push', '--force', 'origin', branch], stderr=subprocess.STDOUT), 'git commit')
-
-def clean_db(db):
-    db['timestamp'] = 0
-    return db
-
-def load_zipped_json(json_name):
-    zip_name = json_name + '.zip'
-    with ZipFile(zip_name, 'r') as zipf:
-        with zipf.open(json_name, "r") as jsonf:
-            return json.load(jsonf)
-
-def expect_ok(proc, message):
-    if proc.returncode != 0:
-        raise Exception(message)
-
 def tag_by_rbf(tag_dictionary, rbf):
     rbf = rbf if rbf.startswith('jt') else ('arcade%s' % rbf)
     if rbf not in tag_dictionary:
@@ -234,7 +205,36 @@ def save_json(db, json_name):
             jsonf.write(json.dumps(db, sort_keys=True).encode("utf-8"))
     with open(json_name, 'w') as f:
         json.dump(db, f, sort_keys=True, indent=4)
+
+def load_zipped_json(json_name):
+    zip_name = json_name + '.zip'
+    with ZipFile(zip_name, 'r') as zipf:
+        with zipf.open(json_name, "r") as jsonf:
+            return json.load(jsonf)
+
+def try_git_push(db, file, branch):
+    expect_ok(subprocess.run(['git', 'fetch', 'origin'], stderr=subprocess.STDOUT), 'git fetch origin')
+    proc = subprocess.run(['git', 'show', 'origin/%s:%s' % (branch, file), '>', 'other.json.zip'], shell=True, stderr=subprocess.STDOUT)
+    other_db = load_zipped_json('other.json') if proc.returncode == 0 else {}
+
+    if json.dumps(clean_db(db), sort_keys=True) == json.dumps(clean_db(other_db), sort_keys=True):
+        print('No changes deteted.')
+        return
     
+    expect_ok(subprocess.run(['git', 'checkout', '--orphan', branch], stderr=subprocess.STDOUT), 'git checkout orphan')
+    expect_ok(subprocess.run(['git', 'reset'], stderr=subprocess.STDOUT), 'git reset')
+    expect_ok(subprocess.run(['git', 'add', file], stderr=subprocess.STDOUT), 'git add file')
+    expect_ok(subprocess.run(['git', 'commit', '-m', '-'], stderr=subprocess.STDOUT), 'git commit')
+    expect_ok(subprocess.run(['git', 'push', '--force', 'origin', branch], stderr=subprocess.STDOUT), 'git commit')
+
+def expect_ok(proc, message):
+    if proc.returncode != 0:
+        raise Exception(message)
+
+def clean_db(db):
+    db['timestamp'] = 0
+    return db
+
 if __name__ == "__main__":
     try:
         main()
