@@ -50,8 +50,8 @@ def main():
         "hbmame": 1
     }
     
-    hbmame_zips = set(load_hash_db_with_fallback(None, hash_dbs_storage, is_hbmame=True, mra=None).keys())
-    mame_zips = set(load_hash_db_with_fallback(None, hash_dbs_storage, is_hbmame=False, mra=None).keys())
+    hbmame_zips = set(load_hash_db_with_fallback(None, hash_dbs_storage, is_hbmame=True, mra=None)[0].keys())
+    mame_zips = set(load_hash_db_with_fallback(None, hash_dbs_storage, is_hbmame=False, mra=None)[0].keys())
 
     for mra in find_all_mras(mra_dirs):
         mameversion, zips, rbf = read_mra_fields(mra)
