@@ -92,7 +92,11 @@ def main():
         },
         "zips": {},
         "base_files_url": "",
-        "default_options": {},
+        "default_options": {
+            "url_safe_characters": {
+                "archive.org": "/()%"
+            }
+        },
         "tag_dictionary": tag_dictionary,
         "timestamp":  int(time.time())
     }
