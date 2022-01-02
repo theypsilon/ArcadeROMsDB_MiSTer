@@ -207,17 +207,15 @@ def save_json(db, json_name):
     with open(json_name, 'w') as f:
         json.dump(db, f, sort_keys=True, indent=4)
 
-def load_zipped_json(json_name):
-    zip_name = json_name + '.zip'
+def load_zipped_json(zip_name, json_name):
     with ZipFile(zip_name, 'r') as zipf:
         with zipf.open(json_name, "r") as jsonf:
             return json.load(jsonf)
 
 def try_git_push(db, file, branch):
     run('git fetch origin')
-    run('git branch --all')
-    proc = subprocess.run('git show origin/%s:%s > other.json.zip' % (branch, file), shell=True, stderr=subprocess.STDOUT)
-    other_db = load_zipped_json('other.json') if proc.returncode == 0 else {}
+    proc = run('git show origin/%s:%s > other.json.zip' % (branch, file), shell=True, fail_ok=True)
+    other_db = load_zipped_json('other.json.zip', Path(file).stem) if proc.returncode == 0 else {}
 
     if json.dumps(clean_db(db), sort_keys=True) == json.dumps(clean_db(other_db), sort_keys=True):
         print('No changes deteted.')
@@ -231,7 +229,7 @@ def try_git_push(db, file, branch):
 
 def run(cmd, fail_ok=False, shell=False, stderr=subprocess.STDOUT, stdout=None):
     print("Running command: " + cmd)
-    proc = subprocess.run(shlex.split(cmd), shell=shell, stderr=stderr, stdout=stdout)
+    proc = subprocess.run(cmd if shell else shlex.split(cmd), shell=shell, stderr=stderr, stdout=stdout)
     if not fail_ok and proc.returncode != 0:
         raise Exception('Command failed!')
     return proc
