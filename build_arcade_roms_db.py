@@ -228,7 +228,7 @@ def try_git_push(db, file, branch):
     run('git commit -m "-"')
     run('git push --force origin %s' % branch)
 
-def run(cmd, fail_ok=False, shell=False, stderr=subprocess.STDOUT, stdout=subprocess.STDOUT):
+def run(cmd, fail_ok=False, shell=False, stderr=subprocess.STDOUT, stdout=None):
     print("Running command: " + cmd)
     proc = subprocess.run(shlex.split(cmd), shell=shell, stderr=stderr, stdout=stdout)
     if not fail_ok and proc.returncode != 0:
