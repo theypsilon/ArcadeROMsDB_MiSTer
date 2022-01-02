@@ -50,8 +50,8 @@ def main():
         "hbmame": 1
     }
     
-    hbmame_zips = set(sources['hbmame_zips'])
-    mame_zips = set(sources['mame_zips'])
+    hbmame_zips = set(load_hash_db_with_fallback(None, hash_dbs_storage, is_hbmame=True, mra=None).keys())
+    mame_zips = set(load_hash_db_with_fallback(None, hash_dbs_storage, is_hbmame=False, mra=None).keys())
 
     for mra in find_all_mras(mra_dirs):
         mameversion, zips, rbf = read_mra_fields(mra)
@@ -122,7 +122,8 @@ def load_hash_db_with_fallback(old_mameversion, hash_dbs_storage, is_hbmame, mra
     hash_db = load_hash_db_from_mameversion(new_mameversion, hash_dbs_storage, is_hbmame)
     if hash_db is None:
         new_mameversion = '0220' if is_hbmame else '0217'
-        print('WARNING! mameversion "%s" missing for mra %s, falling back to %s.' % (str(old_mameversion), str(mra), new_mameversion))
+        if mra is not None:
+            print('WARNING! mameversion "%s" missing for mra %s, falling back to %s.' % (str(old_mameversion), str(mra), new_mameversion))
         hash_db = load_hash_db_from_mameversion(new_mameversion, hash_dbs_storage, is_hbmame)
     return hash_db, new_mameversion
 
