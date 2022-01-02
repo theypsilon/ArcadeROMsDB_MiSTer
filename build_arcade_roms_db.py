@@ -49,6 +49,9 @@ def main():
         "mame": 0,
         "hbmame": 1
     }
+    
+    hbmame_zips = set(sources['hbmame_zips'])
+    mame_zips = set(sources['mame_zips'])
 
     for mra in find_all_mras(mra_dirs):
         mameversion, zips, rbf = read_mra_fields(mra)
@@ -58,6 +61,10 @@ def main():
                 continue
 
             is_hbmame = 'hbmame/' in z
+            zips_set = hbmame_zips if is_hbmame else mame_zips
+            if z not in zips_set:
+                continue
+
             zip_name = Path(z).name
             games_path = ('games/hbmame/%s' % zip_name) if is_hbmame else ('games/mame/%s' % zip_name)
             if games_path in files:
