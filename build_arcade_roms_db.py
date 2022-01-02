@@ -5,7 +5,6 @@ import subprocess
 import tempfile
 import os
 from pathlib import Path
-from xml.etree.ElementTree import ParseError
 import xml.etree.cElementTree as ET
 import sys
 from zipfile import ZipFile
@@ -102,14 +101,49 @@ def main():
         "default_options": {
             "url_safe_characters": {
                 "archive.org": "/()%"
-            }
+            },
+            "downloader_timeout": 900,
+            "downloader_retries": 6
         },
         "tag_dictionary": tag_dictionary,
         "timestamp":  int(time.time())
     }
 
     save_json(db, 'arcade_roms_db.json')
+
+    git_push_branch = os.environ.get('GIT_PUSH_BRANCH', None)
+    if git_push_branch is not None:
+        try_git_push(db, 'arcade_roms_db.json.zip', git_push_branch)
     print('Done.')
+
+def try_git_push(db, file, branch):
+    expect_ok(subprocess.run(['git', 'fetch', 'origin'], stderr=subprocess.STDOUT), 'git fetch origin')
+    proc = subprocess.run(['git', 'show', 'origin/%s:%s' % (branch, file), '>', 'other.json.zip'], shell=True, stderr=subprocess.STDOUT)
+    other_db = load_zipped_json('other.json') if proc.returncode == 0 else {}
+
+    if json.dumps(clean_db(db), sort_keys=True) == json.dumps(clean_db(other_db), sort_keys=True):
+        print('No changes deteted.')
+        return
+    
+    expect_ok(subprocess.run(['git', 'checkout', '--orphan', branch], stderr=subprocess.STDOUT), 'git checkout orphan')
+    expect_ok(subprocess.run(['git', 'reset'], stderr=subprocess.STDOUT), 'git reset')
+    expect_ok(subprocess.run(['git', 'add', file], stderr=subprocess.STDOUT), 'git add file')
+    expect_ok(subprocess.run(['git', 'commit', '-m', '-'], stderr=subprocess.STDOUT), 'git commit')
+    expect_ok(subprocess.run(['git', 'push', '--force', 'origin', branch], stderr=subprocess.STDOUT), 'git commit')
+
+def clean_db(db):
+    db['timestamp'] = 0
+    return db
+
+def load_zipped_json(json_name):
+    zip_name = json_name + '.zip'
+    with ZipFile(zip_name, 'r') as zipf:
+        with zipf.open(json_name, "r") as jsonf:
+            return json.load(jsonf)
+
+def expect_ok(proc, message):
+    if proc.returncode != 0:
+        raise Exception(message)
 
 def tag_by_rbf(tag_dictionary, rbf):
     rbf = rbf if rbf.startswith('jt') else ('arcade%s' % rbf)
