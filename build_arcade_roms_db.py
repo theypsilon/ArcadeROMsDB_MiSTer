@@ -9,6 +9,7 @@ import xml.etree.cElementTree as ET
 import sys
 from zipfile import ZipFile
 import time
+import shlex
 
 _print = print
 def print(text=""):
@@ -213,23 +214,26 @@ def load_zipped_json(json_name):
             return json.load(jsonf)
 
 def try_git_push(db, file, branch):
-    expect_ok(subprocess.run(['git', 'fetch', 'origin'], stderr=subprocess.STDOUT), 'git fetch origin')
-    proc = subprocess.run(['git', 'show', 'origin/%s:%s' % (branch, file), '>', 'other.json.zip'], shell=True, stderr=subprocess.STDOUT)
+    run('git fetch origin')
+    proc = subprocess.run('git show origin/%s:%s > other.json.zip' % (branch, file), shell=True)
     other_db = load_zipped_json('other.json') if proc.returncode == 0 else {}
 
     if json.dumps(clean_db(db), sort_keys=True) == json.dumps(clean_db(other_db), sort_keys=True):
         print('No changes deteted.')
         return
-    
-    expect_ok(subprocess.run(['git', 'checkout', '--orphan', branch], stderr=subprocess.STDOUT), 'git checkout orphan')
-    expect_ok(subprocess.run(['git', 'reset'], stderr=subprocess.STDOUT), 'git reset')
-    expect_ok(subprocess.run(['git', 'add', file], stderr=subprocess.STDOUT), 'git add file')
-    expect_ok(subprocess.run(['git', 'commit', '-m', '-'], stderr=subprocess.STDOUT), 'git commit')
-    expect_ok(subprocess.run(['git', 'push', '--force', 'origin', branch], stderr=subprocess.STDOUT), 'git commit')
 
-def expect_ok(proc, message):
-    if proc.returncode != 0:
-        raise Exception(message)
+    run('git checkout --orphan %s' % branch)
+    run('git reset')
+    run('git add %s' % file)
+    run('git commit -m "-"')
+    run('git push --force origin %s' % branch)
+
+def run(cmd, fail_ok=False, shell=False, stderr=subprocess.STDOUT, stdout=subprocess.STDOUT):
+    print("Running command: " + cmd)
+    proc = subprocess.run(shlex.split(cmd), shell=shell, stderr=stderr, stdout=stdout)
+    if not fail_ok and proc.returncode != 0:
+        raise Exception('Command failed!')
+    return proc
 
 def clean_db(db):
     db['timestamp'] = 0
