@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 import xml.etree.cElementTree as ET
 import sys
-from zipfile import ZipFile
+from zipfile import ZIP_DEFLATED, ZipFile
 import time
 import shlex
 
@@ -201,7 +201,7 @@ def read_mra_fields(mra_path):
 
 def save_json(db, json_name):
     zip_name = json_name + '.zip'
-    with ZipFile(zip_name, 'w') as zipf:
+    with ZipFile(zip_name, 'w', compression=ZIP_DEFLATED) as zipf:
         with zipf.open(json_name, "w") as jsonf:
             jsonf.write(json.dumps(db, sort_keys=True).encode("utf-8"))
     with open(json_name, 'w') as f:
@@ -215,7 +215,8 @@ def load_zipped_json(json_name):
 
 def try_git_push(db, file, branch):
     run('git fetch origin')
-    proc = run('git show origin/%s:%s > other.json.zip' % (branch, file), shell=True, fail_ok=True)
+    run('git branch --all')
+    proc = subprocess.run('git show origin/%s:%s > other.json.zip' % (branch, file), shell=True, stderr=subprocess.STDOUT)
     other_db = load_zipped_json('other.json') if proc.returncode == 0 else {}
 
     if json.dumps(clean_db(db), sort_keys=True) == json.dumps(clean_db(other_db), sort_keys=True):
