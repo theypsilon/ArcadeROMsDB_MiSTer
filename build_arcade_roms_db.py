@@ -215,7 +215,7 @@ def load_zipped_json(json_name):
 
 def try_git_push(db, file, branch):
     run('git fetch origin')
-    proc = subprocess.run('git show origin/%s:%s > other.json.zip' % (branch, file), shell=True, fail_ok=True)
+    proc = run('git show origin/%s:%s > other.json.zip' % (branch, file), shell=True, fail_ok=True)
     other_db = load_zipped_json('other.json') if proc.returncode == 0 else {}
 
     if json.dumps(clean_db(db), sort_keys=True) == json.dumps(clean_db(other_db), sort_keys=True):
@@ -228,9 +228,9 @@ def try_git_push(db, file, branch):
     run('git commit -m "-"')
     run('git push --force origin %s' % branch)
 
-def run(cmd, fail_ok=False, shell=False):
+def run(cmd, fail_ok=False, shell=False, stderr=subprocess.STDOUT, stdout=subprocess.STDOUT):
     print("Running command: " + cmd)
-    proc = subprocess.run(shlex.split(cmd), shell=shell, stderr=subprocess.STDOUT)
+    proc = subprocess.run(shlex.split(cmd), shell=shell, stderr=stderr, stdout=stdout)
     if not fail_ok and proc.returncode != 0:
         raise Exception('Command failed!')
     return proc
