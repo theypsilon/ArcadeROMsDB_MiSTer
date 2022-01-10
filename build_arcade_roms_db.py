@@ -61,9 +61,6 @@ def main():
                 continue
 
             is_hbmame = 'hbmame/' in z
-            zips_set = hbmame_zips if is_hbmame else mame_zips
-            if z not in zips_set:
-                continue
 
             zip_name = Path(z).name
             games_path = ('games/hbmame/%s' % zip_name) if is_hbmame else ('games/mame/%s' % zip_name)
