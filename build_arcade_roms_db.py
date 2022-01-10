@@ -47,7 +47,8 @@ def main():
     files = {}
     tag_dictionary = {
         "mame": 0,
-        "hbmame": 1
+        "hbmame": 1,
+        "games": 2,
     }
     
     hbmame_zips = set(load_hash_db_with_fallback(None, hash_dbs_storage, is_hbmame=True, mra=None)[0].keys())
@@ -73,7 +74,7 @@ def main():
                 print('INFO: zip_name %s not in hash_db %s for mra %s' % (zip_name, mameversion, str(mra)))
                 continue
 
-            tags = [1 if is_hbmame else 0]
+            tags = [1 if is_hbmame else 0, 2]
             if rbf is not None:
                 tags.append(tag_by_rbf(tag_dictionary, rbf))
 
@@ -90,9 +91,15 @@ def main():
         "db_files": [],
         "files": files,
         "folders": {
-            "games": {},
-            "games/mame": {},
-            "games/hbmame": {},
+            "games": {
+                "tags": [2]
+            },
+            "games/mame": {
+                "tags": [0, 2]
+            },
+            "games/hbmame": {
+                "tags": [1, 2]
+            },
         },
         "zips": {},
         "base_files_url": "",
