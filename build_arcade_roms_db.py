@@ -104,9 +104,6 @@ def main():
         "zips": {},
         "base_files_url": "",
         "default_options": {
-            "url_safe_characters": {
-                "archive.org": "/()%"
-            },
             "downloader_timeout": 900,
             "downloader_retries": 6
         },
