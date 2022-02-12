@@ -128,7 +128,7 @@ def load_hash_db_with_fallback(old_mameversion, hash_dbs_storage, is_hbmame, mra
     new_mameversion = old_mameversion
     hash_db = load_hash_db_from_mameversion(new_mameversion, hash_dbs_storage, is_hbmame)
     if hash_db is None:
-        new_mameversion = '0220' if is_hbmame else '0217'
+        new_mameversion = '0240' if is_hbmame else '0217'
         if mra is not None:
             print('WARNING! mameversion "%s" missing for mra %s, falling back to %s.' % (str(old_mameversion), str(mra), new_mameversion))
         hash_db = load_hash_db_from_mameversion(new_mameversion, hash_dbs_storage, is_hbmame)
