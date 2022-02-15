@@ -88,7 +88,6 @@ def main():
 
     db = {
         "db_id": 'arcade_roms_db',
-        "db_files": [],
         "files": files,
         "folders": {
             "games": {
@@ -101,8 +100,6 @@ def main():
                 "tags": [1, 2]
             },
         },
-        "zips": {},
-        "base_files_url": "",
         "default_options": {
             "downloader_timeout": 900,
             "downloader_retries": 6
