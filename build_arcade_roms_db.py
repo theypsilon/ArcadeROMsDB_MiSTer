@@ -76,7 +76,7 @@ def main():
                 print('INFO: zip_name %s not in hash_db %s -> Skipping........' % (zip_name, mameversion))
                 continue
 
-            print('Added zip_name %s from hash_db %' % (zip_name, mameversion))
+            print('Added zip_name %s from hash_db %s' % (zip_name, mameversion))
 
             tags = [1 if is_hbmame else 0, 2]
             if rbf is not None:
