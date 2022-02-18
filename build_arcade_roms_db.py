@@ -55,6 +55,7 @@ def main():
     mame_zips = set(load_hash_db_with_fallback(None, hash_dbs_storage, is_hbmame=False, mra=None)[0].keys())
 
     for mra in find_all_mras(mra_dirs):
+        print('Reading MRA: %s' % mra)
         mameversion, zips, rbf = read_mra_fields(mra)
         
         for z in zips:
