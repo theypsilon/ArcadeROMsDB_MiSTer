@@ -67,15 +67,15 @@ def main():
             zip_name = Path(z).name
             games_path = ('games/hbmame/%s' % zip_name) if is_hbmame else ('games/mame/%s' % zip_name)
             if games_path in files:
-                print('WARNING! File %s tried to be redefined during mra %s' % (games_path, str(mra)))
+                print('WARNING! File %s tried to be redefined' % games_path)
                 continue
             
             hash_db, mameversion = load_hash_db_with_fallback(mameversion, hash_dbs_storage, is_hbmame, mra)
             if zip_name not in hash_db:
-                print('INFO: zip_name %s not in hash_db %s for mra %s' % (zip_name, mameversion, str(mra)))
-                continue
-                
-            print('Added zip_name %s' % zip_name)
+                print('INFO: zip_name %s not in hash_db %s' % (zip_name, mameversion))
+                hash_db, mameversion = load_hash_db_with_fallback(None, hash_dbs_storage, is_hbmame, mra)
+
+            print('Added zip_name %s from hash_db %' % (zip_name, mameversion))
 
             tags = [1 if is_hbmame else 0, 2]
             if rbf is not None:
