@@ -50,9 +50,6 @@ def main():
         "hbmame": 1,
         "games": 2,
     }
-    
-    hbmame_zips = set(load_hash_db_with_fallback(None, hash_dbs_storage, is_hbmame=True, mra=None)[0].keys())
-    mame_zips = set(load_hash_db_with_fallback(None, hash_dbs_storage, is_hbmame=False, mra=None)[0].keys())
 
     for mra in find_all_mras(mra_dirs):
         print('Reading MRA: %s' % mra)
@@ -72,8 +69,12 @@ def main():
             
             hash_db, mameversion = load_hash_db_with_fallback(mameversion, hash_dbs_storage, is_hbmame, mra)
             if zip_name not in hash_db:
-                print('INFO: zip_name %s not in hash_db %s' % (zip_name, mameversion))
                 hash_db, mameversion = load_hash_db_with_fallback(None, hash_dbs_storage, is_hbmame, mra)
+                print('INFO: zip_name %s not in hash_db %s -> Fallback instead' % (zip_name, mameversion))
+
+            if zip_name not in hash_db:
+                print('INFO: zip_name %s not in hash_db %s -> Skipping........' % (zip_name, mameversion))
+                continue
 
             print('Added zip_name %s from hash_db %' % (zip_name, mameversion))
 
