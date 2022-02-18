@@ -74,6 +74,8 @@ def main():
             if zip_name not in hash_db:
                 print('INFO: zip_name %s not in hash_db %s for mra %s' % (zip_name, mameversion, str(mra)))
                 continue
+                
+            print('Added zip_name %s' % zip_name)
 
             tags = [1 if is_hbmame else 0, 2]
             if rbf is not None:
