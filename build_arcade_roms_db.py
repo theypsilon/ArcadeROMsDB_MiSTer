@@ -10,6 +10,7 @@ import sys
 from zipfile import ZIP_DEFLATED, ZipFile
 import time
 import shlex
+import difflib
 
 _print = print
 def print(text=""):
@@ -219,9 +220,19 @@ def try_git_push(db, file, branch):
     proc = run('git show origin/%s:%s > other.json.zip' % (branch, file), shell=True, fail_ok=True)
     other_db = load_zipped_json('other.json.zip', Path(file).stem) if proc.returncode == 0 else {}
 
-    if json.dumps(clean_db(db), sort_keys=True) == json.dumps(clean_db(other_db), sort_keys=True):
+    new_db_json = json.dumps(clean_db(db), sort_keys=True, indent=4)
+    other_db_json = json.dumps(clean_db(other_db), sort_keys=True, indent=4)
+    if new_db_json == other_db_json:
         print('No changes deteted.')
         return
+
+    print('Found differences!')
+    print()
+    
+    for line in difflib.unified_diff(other_db_json.splitlines(), new_db_json.splitlines()):
+        print(line)
+        
+    print()
 
     run('git checkout --orphan %s' % branch)
     run('git reset')
