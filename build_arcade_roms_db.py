@@ -113,8 +113,6 @@ def main():
         "timestamp":  int(time.time())
     }
 
-    print(db)
-
     git_push_branch = os.environ.get('GIT_PUSH_BRANCH', None)
     if git_push_branch is not None:
         try_git_push(db, 'arcade_roms_db.json.zip', git_push_branch, os.environ.get('DB_URL', ''))
@@ -221,8 +219,12 @@ def try_git_push(db, file, branch, db_url):
     proc = run('curl -o other.json.zip %s' % db_url, shell=True, fail_ok=True)
     other_db = load_zipped_json('other.json.zip', json_name) if proc.returncode == 0 else {}
 
+    print(db)
     new_db_json = json.dumps(clean_db(db), sort_keys=True, indent=4)
+    print(new_db_json)
+
     other_db_json = json.dumps(clean_db(other_db), sort_keys=True, indent=4)
+    
     if new_db_json == other_db_json:
         print('No changes deteted.')
         return
@@ -245,9 +247,6 @@ def try_git_push(db, file, branch, db_url):
 
     run('git commit -m "-"')
     run('git push --force origin %s' % branch)
-
-    print()
-    print(db)
 
 def run(cmd, fail_ok=False, shell=False, stderr=subprocess.STDOUT, stdout=None):
     print("Running command: " + cmd)
