@@ -200,7 +200,7 @@ def read_mra_fields(mra_path):
                 continue
             rbf = elem.text.strip().lower()
 
-    return mameversion, list(zips), rbf
+    return mameversion, sorted(zips), rbf
 
 def save_json(db, json_name):
     zip_name = json_name + '.zip'
