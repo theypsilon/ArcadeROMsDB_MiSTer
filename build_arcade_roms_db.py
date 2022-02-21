@@ -239,6 +239,8 @@ def try_git_push(db, file, branch, db_url):
     save_json(db, json_name)
 
     run('git add %s' % file)
+    run('git add %s' % json_name)
+
     run('git commit -m "-"')
     run('git push --force origin %s' % branch)
 
