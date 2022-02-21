@@ -219,12 +219,15 @@ def try_git_push(db, file, branch, db_url):
     proc = run('curl -o other.json.zip %s' % db_url, shell=True, fail_ok=True)
     other_db = load_zipped_json('other.json.zip', json_name) if proc.returncode == 0 else {}
 
+    print('new_db_json')
     print(db)
     new_db_json = json.dumps(clean_db(db), sort_keys=True, indent=4)
     print(new_db_json)
 
+    print('other_db_json')
+    print(other_db)
     other_db_json = json.dumps(clean_db(other_db), sort_keys=True, indent=4)
-    
+
     if new_db_json == other_db_json:
         print('No changes deteted.')
         return
