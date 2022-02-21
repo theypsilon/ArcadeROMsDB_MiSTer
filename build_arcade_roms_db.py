@@ -132,7 +132,7 @@ def load_hash_db_with_fallback(old_mameversion, hash_dbs_storage, is_hbmame, mra
     if hash_db is None:
         new_mameversion = '0220' if is_hbmame else '0240'
         if mra is not None:
-            print('WARNING! mameversion "%s" missing for mra %s, falling back to %s.' % (str(old_mameversion), str(mra), new_mameversion))
+            print('WARNING! mameversion "%s" missing for mra %s, falling back to %s.' % (str(old_mameversion), mra, new_mameversion))
         hash_db = load_hash_db_from_mameversion(new_mameversion, hash_dbs_storage, is_hbmame)
     return hash_db, new_mameversion
 
@@ -161,7 +161,7 @@ def _find_all_mras_scan(directory):
         if entry.is_dir(follow_symlinks=False):
             yield from _find_all_mras_scan(entry.path)
         elif entry.name.lower().endswith(".mra"):
-            yield Path(entry.path)
+            yield entry.path
 
 def et_iterparse(mra_file, events):
     with open(mra_file, 'r') as f:
@@ -178,12 +178,12 @@ def read_mra_fields(mra_path):
     rbf = None
     zips = set()
 
-    context = et_iterparse(str(mra_path), events=("start",))
+    context = et_iterparse(mra_path, events=("start",))
     for _, elem in context:
         elem_tag = elem.tag.lower()
         if elem_tag == 'mameversion':
             if mameversion is not None:
-                print('WARNING! Duplicated mameversion tag on file %s, first value %s, later value %s' % (str(mra_path),mameversion,elem.text))
+                print('WARNING! Duplicated mameversion tag on file %s, first value %s, later value %s' % (mra_path,mameversion,elem.text))
                 continue
             if elem.text is None:
                 continue
@@ -194,7 +194,7 @@ def read_mra_fields(mra_path):
                 zips |= {z.strip().lower() for z in attributes['zip'].strip().lower().split('|')}
         elif elem_tag == 'rbf':
             if rbf is not None:
-                print('WARNING! Duplicated rbf tag on file %s, first value %s, later value %s' % (str(mra_path),rbf,elem.text))
+                print('WARNING! Duplicated rbf tag on file %s, first value %s, later value %s' % (mra_path,rbf,elem.text))
                 continue
             if elem.text is None:
                 continue
