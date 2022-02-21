@@ -52,7 +52,7 @@ def main():
         "games": 2,
     }
 
-    all_mras = sorted(find_all_mras(mra_dirs))
+    all_mras = find_all_mras(mra_dirs)
 
     for mra in ([mra for mra in all_mras if '_alternatives' not in mra.lower()] + [mra for mra in all_mras if '_alternatives' in mra.lower()]):
         print('Reading MRA: %s' % mra)
@@ -154,7 +154,7 @@ def load_json_from_path(db_path):
         return json.load(f)
 
 def find_all_mras(directory):
-    return sorted(_find_all_mras_scan(directory), key=lambda mra: mra.name.lower())
+    return sorted(_find_all_mras_scan(directory), key=lambda mra: mra.lower())
 
 def _find_all_mras_scan(directory):
     for entry in os.scandir(directory):
