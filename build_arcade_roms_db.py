@@ -113,8 +113,6 @@ def main():
         "timestamp":  int(time.time())
     }
 
-    save_json(db, 'arcade_roms_db.json')
-
     git_push_branch = os.environ.get('GIT_PUSH_BRANCH', None)
     if git_push_branch is not None:
         try_git_push(db, 'arcade_roms_db.json.zip', git_push_branch, os.environ.get('DB_URL', ''))
@@ -216,9 +214,10 @@ def load_zipped_json(zip_name, json_name):
             return json.load(jsonf)
 
 def try_git_push(db, file, branch, db_url):
+    json_name = Path(file).stem
     run('git fetch origin')
     proc = run('curl -o other.json.zip %s' % db_url, shell=True, fail_ok=True)
-    other_db = load_zipped_json('other.json.zip', Path(file).stem) if proc.returncode == 0 else {}
+    other_db = load_zipped_json('other.json.zip', json_name) if proc.returncode == 0 else {}
 
     new_db_json = json.dumps(clean_db(db), sort_keys=True, indent=4)
     other_db_json = json.dumps(clean_db(other_db), sort_keys=True, indent=4)
@@ -236,6 +235,9 @@ def try_git_push(db, file, branch, db_url):
 
     run('git checkout --orphan %s' % branch)
     run('git reset')
+
+    save_json(db, json_name)
+
     run('git add %s' % file)
     run('git commit -m "-"')
     run('git push --force origin %s' % branch)
