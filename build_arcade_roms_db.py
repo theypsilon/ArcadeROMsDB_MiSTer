@@ -227,6 +227,8 @@ def try_git_push(db, file, branch, db_url):
     print('other_db_json')
     print(other_db)
     other_db_json = json.dumps(clean_db(other_db), sort_keys=True, indent=4)
+    print(other_db_json)
+    print(db)
 
     if new_db_json == other_db_json:
         print('No changes deteted.')
