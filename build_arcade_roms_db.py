@@ -242,6 +242,9 @@ def try_git_push(db, file, branch, db_url):
     run('git commit -m "-"')
     run('git push --force origin %s' % branch)
 
+    print()
+    run('cat %s' % json_name)
+
 def run(cmd, fail_ok=False, shell=False, stderr=subprocess.STDOUT, stdout=None):
     print("Running command: " + cmd)
     proc = subprocess.run(cmd if shell else shlex.split(cmd), shell=shell, stderr=stderr, stdout=stdout)
