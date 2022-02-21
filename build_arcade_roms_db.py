@@ -117,7 +117,7 @@ def main():
 
     git_push_branch = os.environ.get('GIT_PUSH_BRANCH', None)
     if git_push_branch is not None:
-        try_git_push(db, 'arcade_roms_db.json.zip', git_push_branch)
+        try_git_push(db, 'arcade_roms_db.json.zip', git_push_branch, os.environ.get('DB_URL', ''))
     print('Done.')
 
 def tag_by_rbf(tag_dictionary, rbf):
@@ -215,9 +215,9 @@ def load_zipped_json(zip_name, json_name):
         with zipf.open(json_name, "r") as jsonf:
             return json.load(jsonf)
 
-def try_git_push(db, file, branch):
+def try_git_push(db, file, branch, db_url):
     run('git fetch origin')
-    proc = run('git show origin/%s:%s > other.json.zip' % (branch, file), shell=True, fail_ok=True)
+    proc = run('curl -o other.json.zip %s' % db_url, shell=True, fail_ok=True)
     other_db = load_zipped_json('other.json.zip', Path(file).stem) if proc.returncode == 0 else {}
 
     new_db_json = json.dumps(clean_db(db), sort_keys=True, indent=4)

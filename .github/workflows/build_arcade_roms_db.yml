@@ -20,3 +20,4 @@ jobs:
         python3 build_arcade_roms_db.py
       env:
         GIT_PUSH_BRANCH: db
+        DB_URL: https://raw.githubusercontent.com/theypsilon/ArcadeROMsDB_MiSTer/db/arcade_roms_db.json.zip
