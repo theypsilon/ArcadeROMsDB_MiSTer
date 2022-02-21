@@ -113,6 +113,8 @@ def main():
         "timestamp":  int(time.time())
     }
 
+    print(db)
+
     git_push_branch = os.environ.get('GIT_PUSH_BRANCH', None)
     if git_push_branch is not None:
         try_git_push(db, 'arcade_roms_db.json.zip', git_push_branch, os.environ.get('DB_URL', ''))
