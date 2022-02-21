@@ -46,6 +46,7 @@ def main():
 
     hash_dbs_storage = {}
     files = {}
+    versions = {}
     tag_dictionary = {
         "mame": 0,
         "hbmame": 1,
@@ -67,9 +68,10 @@ def main():
             zip_name = Path(z).name
             games_path = ('games/hbmame/%s' % zip_name) if is_hbmame else ('games/mame/%s' % zip_name)
             if games_path in files:
-                print('WARNING! File %s tried to be redefined' % games_path)
+                if versions[games_path] != mameversion:
+                    print('WARNING! File %s tried to be redefined' % games_path)
                 continue
-            
+
             hash_db, mameversion = load_hash_db_with_fallback(mameversion, hash_dbs_storage, is_hbmame, mra)
             if zip_name not in hash_db:
                 hash_db, mameversion = load_hash_db_with_fallback(None, hash_dbs_storage, is_hbmame, mra)
@@ -92,6 +94,7 @@ def main():
                 "url": sources['hbmame' if is_hbmame else 'mame'][mameversion] + zip_name,
                 "tags": tags
             }
+            versions[games_path] = mameversion
 
     db = {
         "db_id": 'arcade_roms_db',
@@ -242,7 +245,6 @@ def try_git_push(db, file, branch, db_url):
     save_json(db, json_name)
 
     run('git add %s' % file)
-    run('git add %s' % json_name)
 
     run('git commit -m "-"')
     run('git push --force origin %s' % branch)
