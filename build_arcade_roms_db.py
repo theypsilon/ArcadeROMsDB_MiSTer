@@ -66,7 +66,7 @@ def main():
             is_hbmame = 'hbmame/' in z
 
             zip_name = Path(z).name
-            games_path = ('games/hbmame/%s' % zip_name) if is_hbmame else ('games/mame/%s' % zip_name)
+            games_path = ('|games/hbmame/%s' % zip_name) if is_hbmame else ('|games/mame/%s' % zip_name)
             if games_path in files:
                 if versions[games_path] != mameversion:
                     print('WARNING! File %s tried to be redefined' % games_path)
@@ -100,13 +100,13 @@ def main():
         "db_id": 'arcade_roms_db',
         "files": files,
         "folders": {
-            "games": {
+            "|games": {
                 "tags": [2]
             },
-            "games/mame": {
+            "|games/mame": {
                 "tags": [0, 2]
             },
-            "games/hbmame": {
+            "|games/hbmame": {
                 "tags": [1, 2]
             },
         },
