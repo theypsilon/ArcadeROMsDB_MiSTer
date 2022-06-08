@@ -30,7 +30,11 @@
 		"0220": "https://archive.org/download/hbmame0220/",
 		"0224": "https://archive.org/download/hbmame0224roms/",
 		"0226": "https://archive.org/download/HBmame0.226-romsmerged/",
-		"0227": "https://archive.org/download/HBmame0.227-romsmerged/"
+		"0227": "https://archive.org/download/HBmame0.227-romsmerged/",
+		"0228": "https://archive.org/download/HBmame0.228-romsmerged/",
+		"0229": "https://archive.org/download/HBmame0.229-romsmerged/",
+		"0230": "https://archive.org/download/HBmame0.230-romsmerged/"
+
 	},
 	"mra": {
 		"https://github.com/MiSTer-devel/Distribution_MiSTer/archive/refs/heads/main.zip": "Distribution_MiSTer-main/_Arcade/*",
