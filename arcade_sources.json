@@ -38,7 +38,7 @@
 	},
 	"mra": {
 		"https://github.com/MiSTer-devel/Distribution_MiSTer/archive/refs/heads/main.zip": "Distribution_MiSTer-main/_Arcade/*",
-		"https://github.com/jotego/jtbin/archive/refs/heads/master.zip": "jtbin-master/mra/*",
+		"https://github.com/jotego/jtpremium/archive/refs/heads/main.zip": "jtbin-master/_Arcade/*",
 		"https://github.com/theypsilon/Unofficial_Distribution_MiSTer/archive/refs/heads/main.zip": "Unofficial_Distribution_MiSTer-main/_Arcade/*"
 	}
 }
